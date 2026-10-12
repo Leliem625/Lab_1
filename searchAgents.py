@@ -295,15 +295,21 @@ class CornersProblem(search.SearchProblem):
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        startPosition = self.startingPosition
+        visitedCornor = [];
+        for cornor in self.corners:
+            visitedCornor.append(startPosition == cornor)
+        return (startPosition, tuple(visitedCornor))
 
     def isGoalState(self, state: Any):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        position, visitedCorners = state
+        for visited in visitedCorners:
+            if not visited:      # còn góc chưa thăm
+                return False
+        return True
 
     def getSuccessors(self, state: Any):
         """
@@ -317,15 +323,23 @@ class CornersProblem(search.SearchProblem):
         """
 
         successors = []
+        position, visitedCornor = state
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #   x,y = currentPosition
-            #   dx, dy = Actions.directionToVector(action)
-            #   nextx, nexty = int(x + dx), int(y + dy)
-            #   hitsWall = self.walls[nextx][nexty]
+              x,y =position
+              dx, dy = Actions.directionToVector(action)
+              nextx, nexty = int(x + dx), int(y + dy)
+              if self.walls[nextx][nexty]:
+                  continue
+              newPosition = (nextx, nexty)
+              newVisited = []
+    
+              for i in range(4):
+                newVisited.append(visitedCornor[i] or newPosition == self.corners[i])
+              newVisited = tuple(newVisited)
+              successors.append(((newPosition, newVisited), action, 1))
 
-            "*** YOUR CODE HERE ***"
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
