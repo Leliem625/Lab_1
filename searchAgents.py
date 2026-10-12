@@ -334,7 +334,6 @@ class CornersProblem(search.SearchProblem):
                   continue
               newPosition = (nextx, nexty)
               newVisited = []
-    
               for i in range(4):
                 newVisited.append(visitedCornor[i] or newPosition == self.corners[i])
               newVisited = tuple(newVisited)
@@ -500,7 +499,7 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -534,9 +533,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return bool(self.food[x][y])
 
 def mazeDistance(point1: Tuple[int, int], point2: Tuple[int, int], gameState: pacman.GameState) -> int:
     """
