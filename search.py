@@ -105,9 +105,39 @@ def breadthFirstSearch(problem: SearchProblem):
     return []
 
 def uniformCostSearch(problem: SearchProblem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
+    """Tim kiem trang thai co chi phi nho nhat truoc."""
+
+    bat_dau = problem.getStartState()
+
+    tap_bien = util.PriorityQueue()
+
+    tap_bien.push((bat_dau, [], 0), 0)
+
+    tap_da_mo_rong = set()
+
+    while not tap_bien.isEmpty():
+        state, actions, cost = tap_bien.pop()
+
+        if state in tap_da_mo_rong:
+            continue
+
+        tap_da_mo_rong.add(state)
+
+        if problem.isGoalState(state):
+            return actions
+
+        for successor, action, step_cost in problem.getSuccessors(state):
+
+            if successor not in tap_da_mo_rong:
+
+                new_cost = cost + step_cost
+
+                tap_bien.push(
+                    (successor, actions + [action], new_cost),
+                    new_cost
+                )
+
+    return []
 
 def nullHeuristic(state, problem=None):
     """
@@ -117,9 +147,42 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    """Tim kiem theo thuat toan A*."""
+
+    bat_dau = problem.getStartState()
+
+    tap_bien = util.PriorityQueue()
+
+    tap_bien.push((bat_dau, [], 0), heuristic(bat_dau, problem))
+
+    tap_da_mo_rong = set()
+
+    while not tap_bien.isEmpty():
+        state, actions, cost = tap_bien.pop()
+
+        if state in tap_da_mo_rong:
+            continue
+
+        tap_da_mo_rong.add(state)
+
+        if problem.isGoalState(state):
+            return actions
+
+        for successor, action, step_cost in problem.getSuccessors(state):
+
+            if successor not in tap_da_mo_rong:
+
+                new_cost = cost + step_cost
+
+                do_uu_tien = new_cost + heuristic(successor, problem)
+
+                tap_bien.push(
+                    (successor, actions + [action], new_cost),
+                    do_uu_tien
+                )
+
+    return []
+
 
 
 # Abbreviations
