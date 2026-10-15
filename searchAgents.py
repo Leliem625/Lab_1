@@ -373,8 +373,35 @@ def cornersHeuristic(state: Any, problem: CornersProblem):
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    position, visitedCorners = state
+    
+    remaining = []
+    
+    remaining = [
+            corners[i]
+            for i in range(4)
+            if not visitedCorners[i]
+        ]
+    
+    if not remaining:
+            return 0
+    
+    from itertools import permutations
+    
+    def distance(a, b):
+            return abs(a[0] - b[0]) + abs(a[1] - b[1])
+    
+    best = float('inf')
+    
+    for order in permutations(remaining):
+            cost = distance(position, order[0])
+    
+            for i in range(len(order) - 1):
+                cost += distance(order[i], order[i + 1])
+    
+            best = min(best, cost)
+    
+    return best
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -467,8 +494,49 @@ def foodHeuristic(state: Tuple[Tuple, List[List]], problem: FoodSearchProblem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    foods = foodGrid.asList()
+    
+    if not foods:
+            return 0
+    
+    if 'mazeDistances' not in problem.heuristicInfo:
+            problem.heuristicInfo['mazeDistances'] = {}
+    
+    kc = problem.heuristicInfo['mazeDistances']
+    gameState = problem.startingGameState
+    
+    def kcach(a, b):
+            key = tuple(sorted((a, b)))
+    
+            if key not in kc:
+                kc[key] = mazeDistance(a, b, gameState)
+    
+            return kc[key]
+    
+    ganNhat = min(kcach(position, food) for food in foods)
+    
+    chuaNoi = set(foods)
+    dau = foods[0]
+    chuaNoi.remove(dau)
+    mst = 0
+    
+    while chuaNoi:
+            totNhat = float('inf')
+            canChon = None
+    
+            for a in foods:
+                if a not in chuaNoi:
+                    for b in chuaNoi:
+                        d = kcach(a, b)
+    
+                        if d < totNhat:
+                            totNhat = d
+                            canChon = b
+    
+            mst += totNhat
+            chuaNoi.remove(canChon)
+    
+    return ganNhat + mst
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
